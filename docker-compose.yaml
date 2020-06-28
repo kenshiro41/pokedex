@@ -1,0 +1,26 @@
+version: '3.7' 
+services:
+  go-api:
+    init: true
+    build: . 
+    tty: true 
+    volumes:
+      - .:/go/src/go-api 
+    ports:
+      - "6001:6001"
+    environment:
+    - GO111MODULE=on
+    - DATABASE_HOST=pokemon_db
+    - DATABASE_USER=ken41
+    - DATABASE_PORT=5432
+    - DATABASE_PASSWD=ken41
+    - DATABASE_DBNAME=pokemon
+  db:
+    image: postgres:latest
+    container_name: pokemon_db
+    environment:
+      POSTGRES_USER: ken41
+      POSTGRES_PASSWORD: ken41
+      POSTGRES_DB: pokemon
+    ports:
+      - 5432:5432
