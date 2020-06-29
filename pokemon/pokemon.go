@@ -1,10 +1,7 @@
 package pokemon
 
 import (
-	"encoding/json"
 	"fmt"
-	"io/ioutil"
-	"log"
 	"poke_api/db"
 	"poke_api/pokemon/entity"
 
@@ -14,17 +11,17 @@ import (
 func Fetch(c *gin.Context) {
 	db := db.Connect()
 	defer db.Close()
+	var p []*entity.Pokemon
+	pokemons := db.Table("pokemon").Find(&p)
+	c.JSON(200, pokemons)
+}
+func FetchById(c *gin.Context) {
+	db := db.Connect()
+	defer db.Close()
+	id := c.Param("id")
+	fmt.Println(id)
+	var p entity.Pokemon
+	pokemon := db.Table("pokemon").Where("id = ?", id).First(&p)
 
-	bytes, err := ioutil.ReadFile("../pokedex.json")
-	if err != nil {
-		log.Fatal(err)
-	}
-	var pokemons []entity.Pokemon
-	if err := json.Unmarshal(bytes, &pokemons); err != nil {
-		log.Fatal(err)
-	}
-	for _, p := range pokemons {
-		fmt.Printf("%d : %s\n", p.ID, p.Name)
-	}
-	c.JSON(200, "pokemon")
+	c.JSON(200, pokemon)
 }
